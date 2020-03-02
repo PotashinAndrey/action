@@ -1,8 +1,9 @@
-import {Vector, Quatern, Matrix} from '/javascript-algebra/index.js';
-import {Canvas} from '/javascript-canvas/index.js';
-import {Projectile} from './projectile.js';
+import { Vector, Quatern, Matrix } from '/javascript-algebra/index.js';
+import { Canvas } from '/javascript-canvas/index.js';
+import Shoot from './Shoot.js';
+import Weapon from './Weapon.js';
 
-let canvas = document.getElementById("canvas");
+export let canvas = document.getElementById("canvas");
 
 canvas.width = 1024;
 canvas.height = 766;
@@ -11,21 +12,31 @@ if (!canvas.getContext('2d')) alert('увы');
 let ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = true;
 
-const cursor = {x: 0, y: 0};
+let shots = [];
+let mousedown = false;
+let weapon = new Weapon(100);
+
+export const cursor = { x: 0, y: 0 };
 canvas.addEventListener('mousemove', e => {
   cursor.x = e.offsetX;
   cursor.y = e.offsetY;
-  Draw();
 });
 
-canvas.addEventListener('click', e => {
-  Shoot();
+canvas.addEventListener('mousedown', e => {
+  mousedown = true;
 });
 
-Draw();
+canvas.addEventListener('mouseup', e => {
+  mousedown = false;
+});
+
+canvas.addEventListener('mouseout', e => {
+  mousedown = false;
+});
+
+Init();
 
 function Draw() {
-
   const w = canvas.width / 2;
   const h = canvas.height / 2;
   ctx.resetTransform();
@@ -35,21 +46,21 @@ function Draw() {
   ctx.translate(w, h);
   ctx.scale(1, -1);
 
-  const scale = {x: 10, y: 10};
+  const scale = { x: 10, y: 10 };
   ctx.scale(scale.x, scale.y);
 
   const cur = {
-    x: (cursor.x - w) /  scale.x,
+    x: (cursor.x - w) / scale.x,
     y: (cursor.y - h) / -scale.y
   }
 
   let angle = -getAngle(cur);
 
   drawMyCharacter(ctx, angle);
-
-  function Shoot() {
-    let proj = new Projectile(20, 100, cur);
-    console.log('shoot'); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  Shoot.draw(ctx, shots);
+  if (mousedown) {
+    const shot = weapon.shoot(cursor, canvas);
+    if (shot) shots.push(shot);
   }
 }
 
@@ -66,7 +77,7 @@ function drawMyCharacter(ctx, angle = 0) {
 function drawHead(ctx) {
   ctx.beginPath();
   ctx.moveTo(2, 0);
-  ctx.arc(0, 0, 2, 0, Math.PI*2, true);
+  ctx.arc(0, 0, 2, 0, Math.PI * 2, true);
 }
 
 function drawBody(ctx, angle, x, y) {
@@ -122,9 +133,9 @@ function drawLinesToCoordinates(w, h, cursor, func) {
 }
 
 function getAngle(cursor) {
-  let v0 = {x:0, y:1};
+  let v0 = { x: 0, y: 1 };
 
-  let angle = Math.acos((cursor.x * v0.x + cursor.y * v0.y)/(Math.sqrt(cursor.x * cursor.x + cursor.y * cursor.y) * Math.sqrt(v0.x * v0.x + v0.y * v0.y)));
+  let angle = Math.acos((cursor.x * v0.x + cursor.y * v0.y) / (Math.sqrt(cursor.x * cursor.x + cursor.y * cursor.y) * Math.sqrt(v0.x * v0.x + v0.y * v0.y)));
 
   if (cursor.x * v0.y - v0.x * cursor.y < 0) {
     angle *= -1;
@@ -134,7 +145,15 @@ function getAngle(cursor) {
 }
 
 function rotate(xCoord, yCoord, angle) {
-  return {x: xCoord * Math.cos(angle) - yCoord * Math.sin(angle),
-          y: yCoord * Math.cos(angle) + xCoord * Math.sin(angle),
-          }
+  return {
+    x: xCoord * Math.cos(angle) - yCoord * Math.sin(angle),
+    y: yCoord * Math.cos(angle) + xCoord * Math.sin(angle),
+  }
 }
+
+function Init() {
+  window.requestAnimationFrame(Init);
+
+  Draw();
+}
+
