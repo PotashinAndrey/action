@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "../../../node_modules/",
+    "paths": {
+      "/javascript-algebra/*": ["./javascript-algebra/*"],
+      "/javascript-fetch-api/*": ["./javascript-fetch-api/*"],
+      "/javascript-std-lib/*":   ["./javascript-std-lib/*"]
+    }
+  }
+}
