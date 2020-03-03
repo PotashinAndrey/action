@@ -2,6 +2,7 @@ import { Vector, Quatern, Matrix } from '/javascript-algebra/index.js';
 import { Canvas } from '/javascript-canvas/index.js';
 import Shoot from './Shoot.js';
 import Weapon from './Weapon.js';
+import Enemy from './Enemy.js';
 
 export let canvas = document.getElementById("canvas");
 
@@ -13,6 +14,7 @@ let ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = true;
 
 let shots = [];
+let enemies = [];
 let mousedown = false;
 let weapon = new Weapon(100);
 
@@ -20,6 +22,12 @@ export const cursor = { x: 0, y: 0 };
 canvas.addEventListener('mousemove', e => {
   cursor.x = e.offsetX;
   cursor.y = e.offsetY;
+});
+
+window.addEventListener('keydown', e => {
+  if (e.keyCode !== 32) return;
+
+  enemies.push(new Enemy(undefined, undefined, {x: (Math.random() - 0.5) * 80, y: (Math.random() - 0.5) * 60}));
 });
 
 canvas.addEventListener('mousedown', e => {
@@ -58,10 +66,15 @@ function Draw() {
 
   drawMyCharacter(ctx, angle);
   Shoot.draw(ctx, shots);
+  Enemy.draw(ctx, enemies);
+
+
   if (mousedown) {
     const shot = weapon.shoot(cursor, canvas);
     if (shot) shots.push(shot);
   }
+
+  shots.forEach(shot => enemies.forEach(enemy => shot.proj.collision(enemy))); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 function drawMyCharacter(ctx, angle = 0) {

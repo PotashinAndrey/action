@@ -11,8 +11,17 @@ export class Projectile {
   }
     
   move() {
-    this.position.x = this.position.x + this.speed * this.startPosition.x;// / Math.abs(this.position.x);
-    this.position.y = this.position.y + this.speed * this.startPosition.y;// / Math.abs(this.position.y);
+    this.position.x = this.position.x + this.speed * this.startPosition.x;
+    this.position.y = this.position.y + this.speed * this.startPosition.y;
+  }
+
+  collision(enemy) {
+    if (enemy.position.x - 3 <= this.position.x && enemy.position.x + 3 >= this.position.x) {
+      if (enemy.position.y - 3 <= this.position.y && enemy.position.y + 3 >= this.position.y) {
+        return true;
+      }
+    }
+    return false;
   }
 
   get x() {

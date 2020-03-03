@@ -40,6 +40,7 @@ export default class Shoot {
       shots[i].move();
       if (shots[i].distanceCheck()) {
         shots.splice(i, 1);
+        i-= 1;
       }
     };
   }
