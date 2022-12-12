@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "javascript-algebra": "^1.4.5",
     "javascript-canvas": "^1.0.6",
     "javascript-std-lib": "latest",
